@@ -8,6 +8,6 @@ All notable changes to this module will be documented in this file.
 
 - init terraform-aws-ses module
 
-### Pending
+### Noted
 
 - ses configuration sets should be create along with ses identity, but terraform doesn't support this yet. (ref: https://github.com/hashicorp/terraform-provider-aws/issues/21129)
