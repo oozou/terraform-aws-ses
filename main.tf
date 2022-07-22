@@ -4,13 +4,13 @@ data "aws_route53_zone" "selected" {
 }
 
 resource "aws_ses_email_identity" "this" {
-  count = var.ses_mode == "email" ? 1 : 0
-  email = try(var.ses_email.email, null)
+  count = var.ses_mode == "email" && var.ses_email.email != null ? 1 : 0
+  email = var.ses_email.email
 }
 
 resource "aws_ses_domain_identity" "this" {
-  count  = var.ses_mode == "domain" ? 1 : 0
-  domain = try(var.ses_domain.domain, null)
+  count  = var.ses_mode == "domain" && var.ses_domain.domain != null ? 1 : 0
+  domain = var.ses_domain.domain
 }
 
 resource "aws_route53_record" "this_domain_verification" {
