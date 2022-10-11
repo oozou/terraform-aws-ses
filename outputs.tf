@@ -17,3 +17,8 @@ output "ses_dkim_tokens" {
   value       = try(aws_ses_domain_dkim.this[0].dkim_tokens, "")
   description = "A list of DKIM Tokens which, when added to the DNS Domain as CNAME records, allows for receivers to verify that emails were indeed authorized by the domain owner."
 }
+
+output "cosumer_policy_arn" {
+  value       = try(aws_iam_policy.consumers_send[0].arn, "")
+  description = "ARN of Consumer Policy"
+}
