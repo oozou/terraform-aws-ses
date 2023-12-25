@@ -28,7 +28,7 @@ resource "aws_ses_domain_dkim" "this" {
 }
 
 resource "aws_route53_record" "this_dkim_verification" {
-  count   = var.ses_mode == "domain" && var.ses_domain.is_verify_dkim ? 3 : 0
+  count   = var.ses_mode == "domain" && var.ses_domain.is_verify_domain && var.ses_domain.is_verify_dkim ? 3 : 0
   zone_id = join("", data.aws_route53_zone.selected.*.id)
   name    = "${element(aws_ses_domain_dkim.this[0].dkim_tokens, count.index)}._domainkey.${var.ses_domain.domain}"
   type    = "CNAME"
