@@ -6,8 +6,15 @@ All notable changes to this module will be documented in this file.
 
 ### Added
 
-- `is_create_consumer_policy` to enabled create the policy to grant permission for sending email
-- output `cosumer_policy_arn`
+- resource `aws_ses_domain_mail_from`
+- resource `aws_route53_record.ses_domain_mail_from_mx` spf record
+- resource `aws_route53_record.ses_domain_mail_from_txt` spf record
+- resource `aws_route53_record.dmarc` dmarc record
+- var `dmarc_record`
+
+### Updated
+
+- var `ses_domain`, add is_verify_dmarc property
 
 
 ## [1.0.2] - 2023-12-25
