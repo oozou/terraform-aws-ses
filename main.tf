@@ -43,7 +43,7 @@ resource "aws_ses_domain_mail_from" "this" {
 }
 
 resource "aws_route53_record" "ses_domain_mail_from_mx" {
-  count   = var.ses_mode == "domain" && var.ses_domain.is_verify_dkim && var.ses_domain.is_verify_dmarc ? 1 : 0
+  count   = var.ses_mode == "domain" && var.ses_domain.is_verify_domain && var.ses_domain.is_verify_dkim && var.ses_domain.is_verify_dmarc ? 1 : 0
   zone_id = join("", data.aws_route53_zone.selected.*.id)
   name    = aws_ses_domain_mail_from.this[0].mail_from_domain
   type    = "MX"
@@ -52,7 +52,7 @@ resource "aws_route53_record" "ses_domain_mail_from_mx" {
 }
 
 resource "aws_route53_record" "ses_domain_mail_from_txt" {
-  count   = var.ses_mode == "domain" && var.ses_domain.is_verify_dkim && var.ses_domain.is_verify_dmarc ? 1 : 0
+  count   = var.ses_mode == "domain" && var.ses_domain.is_verify_domain && var.ses_domain.is_verify_dkim && var.ses_domain.is_verify_dmarc ? 1 : 0
   zone_id = join("", data.aws_route53_zone.selected.*.id)
   name    = aws_ses_domain_mail_from.this[0].mail_from_domain
   type    = "TXT"
@@ -61,7 +61,7 @@ resource "aws_route53_record" "ses_domain_mail_from_txt" {
 }
 
 resource "aws_route53_record" "dmarc" {
-  count   = var.ses_mode == "domain" && var.ses_domain.is_verify_dkim && var.ses_domain.is_verify_dmarc ? 1 : 0
+  count   = var.ses_mode == "domain" && var.ses_domain.is_verify_domain && var.ses_domain.is_verify_dkim && var.ses_domain.is_verify_dmarc ? 1 : 0
   zone_id = join("", data.aws_route53_zone.selected.*.id)
   name    = "_dmarc.${var.ses_domain.domain}"
   type    = "TXT"
