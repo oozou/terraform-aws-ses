@@ -19,12 +19,12 @@ resource "aws_route53_record" "this_domain_verification" {
   name    = "_amazonses.${var.ses_domain.domain}"
   type    = "TXT"
   ttl     = "600"
-  records = [join("", aws_ses_domain_identity.this.*.verification_token)]
+  records = [aws_ses_domain_identity.this[0].verification_token]
 }
 
 resource "aws_ses_domain_dkim" "this" {
   count  = var.ses_mode == "domain" && var.ses_domain.is_verify_dkim ? 1 : 0
-  domain = join("", aws_ses_domain_identity.this.*.domain)
+  domain = aws_ses_domain_identity.this[0].domain
 }
 
 resource "aws_route53_record" "this_dkim_verification" {
@@ -39,7 +39,7 @@ resource "aws_route53_record" "this_dkim_verification" {
 resource "aws_ses_domain_mail_from" "this" {
   count            = var.ses_mode == "domain" && var.ses_domain.is_verify_dkim && var.ses_domain.is_verify_dmarc ? 1 : 0
   domain           = aws_ses_domain_identity.this[0].domain
-  mail_from_domain = "bounce.${aws_ses_domain_identity.this.domain}"
+  mail_from_domain = "bounce.${aws_ses_domain_identity.this[0].domain}"
 }
 
 resource "aws_route53_record" "ses_domain_mail_from_mx" {
