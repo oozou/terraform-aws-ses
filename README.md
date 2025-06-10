@@ -43,7 +43,7 @@ module "ses" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.33.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.0 |
 
 ## Modules
 
@@ -54,10 +54,14 @@ No modules.
 | Name | Type |
 |------|------|
 | [aws_iam_policy.consumers_send](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_route53_record.dmarc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
+| [aws_route53_record.ses_domain_mail_from_mx](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
+| [aws_route53_record.ses_domain_mail_from_txt](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
 | [aws_route53_record.this_dkim_verification](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
 | [aws_route53_record.this_domain_verification](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
 | [aws_ses_domain_dkim.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ses_domain_dkim) | resource |
 | [aws_ses_domain_identity.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ses_domain_identity) | resource |
+| [aws_ses_domain_mail_from.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ses_domain_mail_from) | resource |
 | [aws_ses_email_identity.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ses_email_identity) | resource |
 | [aws_caller_identity.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.consumers_send](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -68,10 +72,11 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_dmarc_record"></a> [dmarc\_record](#input\_dmarc\_record) | DMARC record to be created in Route53 | `string` | `"v=DMARC1; p=none;"` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | To manage a resources with tags | `string` | n/a | yes |
-| <a name="input_prefix"></a> [prefix](#input\_prefix) | The prefix name of customer to be displayed in AWS console and resource | `string` | n/a | yes |
 | <a name="input_is_create_consumer_policy"></a> [is\_create\_consumer\_policy](#input\_is\_create\_consumer\_policy) | Whether to create consumer readonly policy | `bool` | `false` | no |
-| <a name="input_ses_domain"></a> [ses\_domain](#input\_ses\_domain) | Domain that will be use as SES identity. | <pre>object({<br>    domain            = string<br>    route53_zone_name = string<br>    is_verify_domain  = bool<br>    is_verify_dkim    = bool<br>  })</pre> | <pre>{<br>  "domain": null,<br>  "is_verify_dkim": false,<br>  "is_verify_domain": false,<br>  "route53_zone_name": null<br>}</pre> | no |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | The prefix name of customer to be displayed in AWS console and resource | `string` | n/a | yes |
+| <a name="input_ses_domain"></a> [ses\_domain](#input\_ses\_domain) | Domain that will be use as SES identity. | <pre>object({<br>    domain            = string<br>    route53_zone_name = string<br>    is_verify_domain  = bool<br>    is_verify_dkim    = bool<br>    is_verify_dmarc   = bool<br>  })</pre> | <pre>{<br>  "domain": null,<br>  "is_verify_dkim": false,<br>  "is_verify_dmarc": false,<br>  "is_verify_domain": false,<br>  "route53_zone_name": null<br>}</pre> | no |
 | <a name="input_ses_email"></a> [ses\_email](#input\_ses\_email) | Email that will be use as SES identity. | <pre>object({<br>    email = string<br>  })</pre> | <pre>{<br>  "email": null<br>}</pre> | no |
 | <a name="input_ses_mode"></a> [ses\_mode](#input\_ses\_mode) | Mode defines which method to verify identity for SES, which are email and domain. | `string` | `"domain"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Custom tags which can be passed on to the AWS resources. They should be key value pairs having distinct keys. | `map(string)` | `{}` | no |

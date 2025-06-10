@@ -11,6 +11,7 @@ module "ses" {
     is_verify_dkim    = true
     is_verify_domain  = true
     route53_zone_name = "domain.com"
+    is_verify_dmarc   = true
   }
 
   is_create_consumer_policy = true

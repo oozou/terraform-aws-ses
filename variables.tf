@@ -49,12 +49,14 @@ variable "ses_domain" {
     route53_zone_name = string
     is_verify_domain  = bool
     is_verify_dkim    = bool
+    is_verify_dmarc   = bool
   })
   default = {
     domain            = null
+    route53_zone_name = null
     is_verify_dkim    = false
     is_verify_domain  = false
-    route53_zone_name = null
+    is_verify_dmarc   = false
   }
 }
 
@@ -62,4 +64,10 @@ variable "is_create_consumer_policy" {
   description = "Whether to create consumer readonly policy"
   type        = bool
   default     = false
+}
+
+variable "dmarc_record" {
+  description = "DMARC record to be created in Route53"
+  type        = string
+  default     = "v=DMARC1; p=none;"
 }
