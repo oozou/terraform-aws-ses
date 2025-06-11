@@ -15,7 +15,7 @@ resource "aws_ses_domain_identity" "this" {
 
 resource "aws_route53_record" "this_domain_verification" {
   count   = var.ses_mode == "domain" && var.ses_domain.is_verify_domain ? 1 : 0
-  zone_id = join("", data.aws_route53_zone.selected.*.id)
+  zone_id = data.aws_route53_zone.selected[0].id
   name    = "_amazonses.${var.ses_domain.domain}"
   type    = "TXT"
   ttl     = "600"
@@ -29,7 +29,7 @@ resource "aws_ses_domain_dkim" "this" {
 
 resource "aws_route53_record" "this_dkim_verification" {
   count   = var.ses_mode == "domain" && var.ses_domain.is_verify_domain && var.ses_domain.is_verify_dkim ? 3 : 0
-  zone_id = join("", data.aws_route53_zone.selected.*.id)
+  zone_id = data.aws_route53_zone.selected[0].id
   name    = "${element(aws_ses_domain_dkim.this[0].dkim_tokens, count.index)}._domainkey.${var.ses_domain.domain}"
   type    = "CNAME"
   ttl     = "600"
@@ -44,7 +44,7 @@ resource "aws_ses_domain_mail_from" "this" {
 
 resource "aws_route53_record" "ses_domain_mail_from_mx" {
   count   = var.ses_mode == "domain" && var.ses_domain.is_verify_domain && var.ses_domain.is_verify_dkim && var.ses_domain.is_verify_dmarc ? 1 : 0
-  zone_id = join("", data.aws_route53_zone.selected.*.id)
+  zone_id = data.aws_route53_zone.selected[0].id
   name    = aws_ses_domain_mail_from.this[0].mail_from_domain
   type    = "MX"
   ttl     = "600"
@@ -53,7 +53,7 @@ resource "aws_route53_record" "ses_domain_mail_from_mx" {
 
 resource "aws_route53_record" "ses_domain_mail_from_txt" {
   count   = var.ses_mode == "domain" && var.ses_domain.is_verify_domain && var.ses_domain.is_verify_dkim && var.ses_domain.is_verify_dmarc ? 1 : 0
-  zone_id = join("", data.aws_route53_zone.selected.*.id)
+  zone_id = data.aws_route53_zone.selected[0].id
   name    = aws_ses_domain_mail_from.this[0].mail_from_domain
   type    = "TXT"
   ttl     = "600"
@@ -62,7 +62,7 @@ resource "aws_route53_record" "ses_domain_mail_from_txt" {
 
 resource "aws_route53_record" "dmarc" {
   count   = var.ses_mode == "domain" && var.ses_domain.is_verify_domain && var.ses_domain.is_verify_dkim && var.ses_domain.is_verify_dmarc ? 1 : 0
-  zone_id = join("", data.aws_route53_zone.selected.*.id)
+  zone_id = data.aws_route53_zone.selected[0].id
   name    = "_dmarc.${var.ses_domain.domain}"
   type    = "TXT"
   ttl     = 300
