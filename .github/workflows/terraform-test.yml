@@ -147,20 +147,23 @@ jobs:
           go test -v -timeout 30m -report -report-file=test-report.json -html-file=test-report.html
           TEST_EXIT_CODE=$?
           
-          # Save test results for PR comment
           if [ -f test-results.json ]; then
-            echo "test_results<<EOF" >> $GITHUB_OUTPUT
-            cat test-results.json >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            {
+              echo 'test_results<<EOF'
+              cat test-results.json
+              echo 'EOF'
+            } >> "$GITHUB_OUTPUT"
           fi
-          
+
           # Save summary for PR comment
           if [ -f test-summary.md ]; then
-            echo "test_summary<<EOF" >> $GITHUB_OUTPUT
-            cat test-summary.md >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            {
+              echo 'test_summary<<EOF'
+              cat test-summary.md
+              echo 'EOF'
+            } >> "$GITHUB_OUTPUT"
           fi
-          
+
           exit $TEST_EXIT_CODE
           
       - name: Upload test reports
@@ -230,7 +233,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const buildUrl = `${context.payload.repository.html_url}/actions/runs/${context.runId}`;
-            const commentBody = `@claude fix build error:\n\n**Build Link:** ${buildUrl}\n\n## ❌ Go Lint Failed\n\nGo linting failed. Please check the workflow logs for details and fix the linting issues.`;
+            const commentBody = `@claude fix build error:\n\n**Build Link:** ${buildUrl}\n\n## ❌ Test Failed\n\nTest failed. Please check the workflow logs for details and fix the issues.`;
             
             await github.rest.issues.createComment({
               owner: context.repo.owner,
