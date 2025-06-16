@@ -2,6 +2,14 @@
 
 All notable changes to this module will be documented in this file.
 
+## [1.2.0] - 2025-06-11
+
+### Updated
+
+- Upgraded AWS provider from `>= 4.0` to `~> 6.0` to use the latest 6.x.x version
+- Updated all example configurations to use AWS provider `~> 6.0`
+- Updated documentation to reflect new provider requirements
+
 ## [1.1.1] - 2025-06-11
 
 ### Updated
