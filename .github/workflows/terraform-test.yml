@@ -50,6 +50,22 @@ jobs:
           cd ../email-verification
           terraform validate
 
+      - name: Comment PR on validation failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const buildUrl = `${context.payload.repository.html_url}/actions/runs/${context.runId}`;
+            const commentBody = `@claude fix build error:\n\n**Build Link:** ${buildUrl}\n\n## ❌ Terraform Validation Failed\n\nTerraform validation or formatting check failed. Please check the workflow logs for details.`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody,
+            });
+
   lint:
     name: Lint Go Code
     runs-on: ubuntu-latest
@@ -72,6 +88,22 @@ jobs:
         with:
           version: latest
           working-directory: tests
+
+      - name: Comment PR on lint failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const buildUrl = `${context.payload.repository.html_url}/actions/runs/${context.runId}`;
+            const commentBody = `@claude fix build error:\n\n**Build Link:** ${buildUrl}\n\n## ❌ Go Lint Failed\n\nGo linting failed. Please check the workflow logs for details and fix the linting issues.`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody,
+            });
 
   test:
     name: Run Full Test Suite
@@ -148,6 +180,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const summary = `${{ steps.test.outputs.test_summary }}`;
+            const testExitCode = '${{ steps.test.outcome }}';
+            const buildUrl = `${context.payload.repository.html_url}/actions/runs/${context.runId}`;
             
             // Find existing comment
             const { data: comments } = await github.rest.issues.listComments({
@@ -161,7 +195,15 @@ jobs:
               comment.body.includes('🧪 Terraform AWS SES Test Results')
             );
             
-            const commentBody = summary || '## 🧪 Terraform AWS SES Test Results\n\nTest report generation failed. Please check the workflow logs.';
+            let commentBody;
+            
+            if (testExitCode === 'failure') {
+              // If tests failed, add @claude prefix and build link
+              commentBody = `@claude fix build error:\n\n**Build Link:** ${buildUrl}\n\n${summary || '## 🧪 Terraform AWS SES Test Results\n\nTest execution failed. Please check the workflow logs for details.'}`;
+            } else {
+              // For successful tests or other outcomes
+              commentBody = summary || '## 🧪 Terraform AWS SES Test Results\n\nTest report generation failed. Please check the workflow logs.';
+            }
             
             if (botComment) {
               // Update existing comment
@@ -180,4 +222,3 @@ jobs:
                 body: commentBody,
               });
             }
-          
