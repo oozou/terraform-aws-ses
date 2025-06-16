@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -13,6 +14,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+// TestMain enables custom test runner with reporting
+func TestMain(m *testing.M) {
+	TestWithReporting(m)
+}
 
 func TestTerraformAWSSESModule(t *testing.T) {
 	t.Parallel()

@@ -33,7 +33,7 @@ type TestReport struct {
 // GenerateTestReport creates a comprehensive test report
 func GenerateTestReport(results []TestResult, startTime, endTime time.Time) *TestReport {
 	report := &TestReport{
-		TestSuite: "Terraform AWS Aurora PostgreSQL Tests",
+		TestSuite: "Terraform AWS SES Tests",
 		StartTime: startTime,
 		EndTime:   endTime,
 		Duration:  endTime.Sub(startTime).String(),
@@ -68,7 +68,7 @@ func GenerateTestReport(results []TestResult, startTime, endTime time.Time) *Tes
 // PrintReport prints a formatted test report to console
 func (r *TestReport) PrintReport() {
 	fmt.Println("\n" + strings.Repeat("=", 80))
-	fmt.Println("🧪 TERRAFORM AWS AURORA POSTGRESQL TEST REPORT")
+	fmt.Println("🧪 TERRAFORM AWS SES TEST REPORT")
 	fmt.Println(strings.Repeat("=", 80))
 	
 	fmt.Printf("📅 Test Suite: %s\n", r.TestSuite)
@@ -116,8 +116,8 @@ func (r *TestReport) PrintReport() {
 	fmt.Println(r.Summary)
 	
 	if r.FailedTests == 0 {
-		fmt.Println("\n🎉 Congratulations! All PostgreSQL Aurora tests passed successfully!")
-		fmt.Println("✅ Your terraform-aws-aurora module is working correctly for PostgreSQL.")
+		fmt.Println("\n🎉 Congratulations! All SES tests passed successfully!")
+		fmt.Println("✅ Your terraform-aws-ses module is working correctly.")
 	} else {
 		fmt.Println("\n⚠️  Some tests failed. Please review the errors above and fix the issues.")
 		fmt.Println("💡 Check the test logs for more detailed error information.")
@@ -164,7 +164,7 @@ func (r *TestReport) generateHTML() string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terraform AWS Aurora PostgreSQL Test Report</title>
+    <title>Terraform AWS SES Test Report</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
         .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -191,7 +191,7 @@ func (r *TestReport) generateHTML() string {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧪 Terraform AWS Aurora PostgreSQL Test Report</h1>
+            <h1>🧪 Terraform AWS SES Test Report</h1>
             <p><strong>Test Suite:</strong> %s</p>
             <p><strong>Execution Time:</strong> %s to %s</p>
             <p><strong>Duration:</strong> %s</p>
