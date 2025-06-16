@@ -216,7 +216,7 @@ func validateSESEmailIdentity(t *testing.T, email string) error {
 
 	result, err := sesClient.ListIdentities(input)
 	if err != nil {
-		return fmt.Errorf("failed to list SES identities: %v", err)
+		return fmt.Errorf("failed to list SES identities: %w", err)
 	}
 
 	// Check if our test email is in the list
@@ -239,7 +239,7 @@ func validateSESEmailIdentity(t *testing.T, email string) error {
 
 	verifyResult, err := sesClient.GetIdentityVerificationAttributes(verifyInput)
 	if err != nil {
-		return fmt.Errorf("failed to get verification attributes: %v", err)
+		return fmt.Errorf("failed to get verification attributes: %w", err)
 	}
 
 	if _, exists := verifyResult.VerificationAttributes[email]; !exists {
@@ -261,7 +261,7 @@ func validateSESDomainIdentity(t *testing.T, domain string) error {
 
 	result, err := sesClient.ListIdentities(input)
 	if err != nil {
-		return fmt.Errorf("failed to list SES domain identities: %v", err)
+		return fmt.Errorf("failed to list SES domain identities: %w", err)
 	}
 
 	// Check if our test domain is in the list
@@ -284,7 +284,7 @@ func validateSESDomainIdentity(t *testing.T, domain string) error {
 
 	verifyResult, err := sesClient.GetIdentityVerificationAttributes(verifyInput)
 	if err != nil {
-		return fmt.Errorf("failed to get domain verification attributes: %v", err)
+		return fmt.Errorf("failed to get domain verification attributes: %w", err)
 	}
 
 	if _, exists := verifyResult.VerificationAttributes[domain]; !exists {
@@ -298,7 +298,7 @@ func validateSESDomainIdentity(t *testing.T, domain string) error {
 
 	dkimResult, err := sesClient.GetIdentityDkimAttributes(dkimInput)
 	if err != nil {
-		return fmt.Errorf("failed to get DKIM attributes: %v", err)
+		return fmt.Errorf("failed to get DKIM attributes: %w", err)
 	}
 
 	if _, exists := dkimResult.DkimAttributes[domain]; !exists {
@@ -321,7 +321,7 @@ func validateDMARCRecord(t *testing.T, domain string) error {
 	zonesInput := &route53.ListHostedZonesInput{}
 	zonesResult, err := route53Client.ListHostedZones(zonesInput)
 	if err != nil {
-		return fmt.Errorf("failed to list hosted zones: %v", err)
+		return fmt.Errorf("failed to list hosted zones: %w", err)
 	}
 
 	var hostedZoneId string
@@ -343,8 +343,8 @@ func validateDMARCRecord(t *testing.T, domain string) error {
 			// Look for DMARC record
 			dmarcFound := false
 			for _, record := range recordsResult.ResourceRecordSets {
-				if record.Name != nil && *record.Name == dmarcRecordName+"." && 
-				   record.Type != nil && *record.Type == "TXT" {
+				if record.Name != nil && *record.Name == dmarcRecordName+"." &&
+					record.Type != nil && *record.Type == "TXT" {
 					dmarcFound = true
 					
 					// Verify DMARC record content
@@ -380,7 +380,7 @@ func createAWSSession(t *testing.T) *session.Session {
 }
 
 // generateTestReport creates and saves test reports
-func generateTestReport(exitCode int) {
+func generateTestReport(_ int) {
 	endTime := time.Now()
 	
 	// Generate report
@@ -501,12 +501,12 @@ func (r *TestReport) PrintReport() {
 func (r *TestReport) SaveReportToFile(filename string) error {
 	data, err := json.MarshalIndent(r, "", "  ")
 	if err != nil {
-		return fmt.Errorf("failed to marshal report: %v", err)
+		return fmt.Errorf("failed to marshal report: %w", err)
 	}
 	
-	err = os.WriteFile(filename, data, 0644)
+	err = os.WriteFile(filename, data, 0o644)
 	if err != nil {
-		return fmt.Errorf("failed to write report file: %v", err)
+		return fmt.Errorf("failed to write report file: %w", err)
 	}
 	
 	fmt.Printf("📄 Test report saved to: %s\n", filename)
@@ -517,9 +517,9 @@ func (r *TestReport) SaveReportToFile(filename string) error {
 func (r *TestReport) SaveReportToHTML(filename string) error {
 	html := r.generateHTML()
 	
-	err := os.WriteFile(filename, []byte(html), 0644)
+	err := os.WriteFile(filename, []byte(html), 0o644)
 	if err != nil {
-		return fmt.Errorf("failed to write HTML report file: %v", err)
+		return fmt.Errorf("failed to write HTML report file: %w", err)
 	}
 	
 	fmt.Printf("🌐 HTML test report saved to: %s\n", filename)
@@ -724,7 +724,7 @@ func writeGitHubSummary(report *TestReport) {
 	summary.WriteString(report.Summary + "\n")
 	
 	// Write to file
-	if err := os.WriteFile(summaryFile, []byte(summary.String()), 0644); err != nil {
+	if err := os.WriteFile(summaryFile, []byte(summary.String()), 0o644); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to write GitHub summary: %v\n", err)
 	}
 	
@@ -738,9 +738,13 @@ func writeGitHubSummary(report *TestReport) {
 		"summary":  report.Summary,
 	}
 	
-	if jsonData, err := json.Marshal(reportData); err == nil {
-		if err := os.WriteFile("test-results.json", jsonData, 0644); err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to write test results JSON: %v\n", err)
-		}
+	jsonData, err := json.Marshal(reportData)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to marshal test results JSON: %v\n", err)
+		return
+	}
+	
+	if err := os.WriteFile("test-results.json", jsonData, 0o644); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to write test results JSON: %v\n", err)
 	}
 }
