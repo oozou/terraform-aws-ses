@@ -34,12 +34,12 @@ func testSESEmailVerification(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/email-verification",
 		Vars: map[string]interface{}{
-			"prefix":       "terratest",
-			"environment":  "test",
-			"tags":         map[string]string{"test": "true"},
-		},
-		EnvVars: map[string]string{
-			"TF_VAR_ses_email": fmt.Sprintf(`{"email": "%s"}`, testEmail),
+			"prefix":      "terratest",
+			"environment": "test",
+			"tags":        map[string]string{"test": "true"},
+			"ses_email": map[string]interface{}{
+				"email": testEmail,
+			},
 		},
 	})
 
@@ -53,22 +53,22 @@ func testSESEmailVerification(t *testing.T) {
 func testSESDomainVerification(t *testing.T) {
 	// Use a test domain
 	testDomain := fmt.Sprintf("test%d.example.com", time.Now().Unix())
+	testZoneName := fmt.Sprintf("test%d.example.com", time.Now().Unix())
 	
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/domain-verification",
 		Vars: map[string]interface{}{
-			"prefix":       "terratest",
-			"environment":  "test",
-			"tags":         map[string]string{"test": "true"},
-		},
-		EnvVars: map[string]string{
-			"TF_VAR_ses_domain": fmt.Sprintf(`{
-				"domain": "%s",
-				"route53_zone_name": "example.com",
-				"is_verify_domain": true,
-				"is_verify_dkim": true,
-				"is_verify_dmarc": true
-			}`, testDomain),
+			"prefix":      "terratest",
+			"environment": "test",
+			"tags":        map[string]string{"test": "true"},
+			"ses_domain": map[string]interface{}{
+				"domain":            testDomain,
+				"route53_zone_name": testZoneName,
+				"is_verify_domain":  true,
+				"is_verify_dkim":    true,
+				"is_verify_dmarc":   true,
+			},
+			"route53_zone_name": testZoneName,
 		},
 	})
 

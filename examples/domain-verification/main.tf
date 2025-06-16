@@ -1,3 +1,12 @@
+# Create Route53 hosted zone for domain verification
+resource "aws_route53_zone" "main" {
+  name = var.route53_zone_name
+
+  tags = merge(var.tags, {
+    Name = "${var.prefix}-${var.environment}-${var.route53_zone_name}"
+  })
+}
+
 module "ses" {
   source = "../.."
 
@@ -5,14 +14,8 @@ module "ses" {
   environment = var.environment
   tags        = var.tags
 
-  ses_mode = "domain"
-  ses_domain = {
-    domain            = "mail.domain.com"
-    is_verify_dkim    = true
-    is_verify_domain  = true
-    route53_zone_name = "domain.com"
-    is_verify_dmarc   = true
-  }
+  ses_mode   = "domain"
+  ses_domain = var.ses_domain
 
   is_create_consumer_policy = true
 }

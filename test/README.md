@@ -4,7 +4,6 @@ This directory contains automated tests for the terraform-aws-ses module using G
 
 ## Test Files
 
-- `terraform_plan_test.go` - Tests terraform plan validation without requiring AWS resources
 - `terraform_aws_ses_test.go` - Integration tests that validate actual AWS resources (requires AWS credentials)
 - `go.mod` - Go module dependencies
 
@@ -14,20 +13,11 @@ This directory contains automated tests for the terraform-aws-ses module using G
 
 1. Go 1.21+ installed
 2. Terraform installed
-3. For integration tests: AWS credentials configured
+3. AWS credentials configured
 
-### Plan Tests (No AWS Required)
+### Integration Tests
 
-These tests validate terraform plans without creating actual resources:
-
-```bash
-cd test
-go test -v -run TestTerraformPlan
-```
-
-### Integration Tests (AWS Required)
-
-These tests create and validate actual AWS resources:
+These tests create and validate actual AWS resources using configurable variables:
 
 ```bash
 cd test
@@ -36,6 +26,14 @@ go test -v -run TestTerraformAWSSESModule
 ```
 
 **Note:** Integration tests will create and destroy AWS resources, which may incur costs.
+
+### Test Configuration
+
+The tests use the examples with variable overrides:
+
+- **Email Verification**: Tests pass `ses_email` variable with dynamic test email
+- **Domain Verification**: Tests pass `ses_domain` and `route53_zone_name` variables with dynamic test domains
+- **Route53 Integration**: Domain tests create actual hosted zones for verification
 
 ## What the Tests Validate
 

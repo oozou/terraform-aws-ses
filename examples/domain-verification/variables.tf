@@ -17,3 +17,31 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                    SES                                     */
+/* -------------------------------------------------------------------------- */
+
+variable "ses_domain" {
+  description = "SES domain configuration"
+  type = object({
+    domain            = string
+    is_verify_dkim    = bool
+    is_verify_domain  = bool
+    route53_zone_name = string
+    is_verify_dmarc   = bool
+  })
+  default = {
+    domain            = "mail.domain.com"
+    is_verify_dkim    = true
+    is_verify_domain  = true
+    route53_zone_name = "domain.com"
+    is_verify_dmarc   = true
+  }
+}
+
+variable "route53_zone_name" {
+  description = "Route53 zone name to create hosted zone for domain verification"
+  type        = string
+  default     = "domain.com"
+}
