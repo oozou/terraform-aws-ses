@@ -18,4 +18,6 @@ module "ses" {
   ses_domain = var.ses_domain
 
   is_create_consumer_policy = true
+
+  depends_on = [ aws_route53_zone.main ]
 }

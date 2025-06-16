@@ -29,7 +29,7 @@ func TestTerraformAWSSESModule(t *testing.T) {
 
 func testSESEmailVerification(t *testing.T) {
 	// Generate unique test email
-	testEmail := fmt.Sprintf("test-%d@example.com", time.Now().Unix())
+	testEmail := fmt.Sprintf("test-%d@oozou.com", time.Now().Unix())
 	
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/email-verification",
@@ -43,7 +43,8 @@ func testSESEmailVerification(t *testing.T) {
 		},
 	})
 
-	defer terraform.Destroy(t, terraformOptions)
+	//defer terraform.Destroy(t, terraformOptions)
+
 	terraform.InitAndApply(t, terraformOptions)
 
 	// Validate SES email identity was created
@@ -52,8 +53,8 @@ func testSESEmailVerification(t *testing.T) {
 
 func testSESDomainVerification(t *testing.T) {
 	// Use a test domain
-	testDomain := fmt.Sprintf("test%d.example.com", time.Now().Unix())
-	testZoneName := fmt.Sprintf("test%d.example.com", time.Now().Unix())
+	testDomain := fmt.Sprintf("test%d.oozou.com", time.Now().Unix())
+	testZoneName := fmt.Sprintf("test%d.oozou.com", time.Now().Unix())
 	
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/domain-verification",
@@ -72,7 +73,8 @@ func testSESDomainVerification(t *testing.T) {
 		},
 	})
 
-	defer terraform.Destroy(t, terraformOptions)
+	//defer terraform.Destroy(t, terraformOptions)
+	
 	terraform.InitAndApply(t, terraformOptions)
 
 	// Validate SES domain identity was created
@@ -94,6 +96,7 @@ func validateSESEmailIdentity(t *testing.T, email string) {
 
 	result, err := sesClient.ListIdentities(input)
 	require.NoError(t, err, "Failed to list SES identities")
+	fmt.Printf("result: %+v\n", result)
 
 	// Check if our test email is in the list
 	found := false
@@ -148,6 +151,7 @@ func validateSESDomainIdentity(t *testing.T, domain string) {
 
 	verifyResult, err := sesClient.GetIdentityVerificationAttributes(verifyInput)
 	require.NoError(t, err, "Failed to get domain verification attributes")
+	fmt.Printf("result: %+v\n", verifyResult)
 
 	assert.Contains(t, verifyResult.VerificationAttributes, domain, "Domain identity verification attributes not found")
 
@@ -181,11 +185,7 @@ func validateDMARCRecord(t *testing.T, domain string) {
 	var hostedZoneId string
 	for _, zone := range zonesResult.HostedZones {
 		// Look for zone that could contain our domain
-		if len(zone.Name) > 0 && zone.Name != nil {
-			// Simple check - in real scenario you'd want more sophisticated matching
-			hostedZoneId = *zone.Id
-			break
-		}
+		hostedZoneId = *zone.Id
 	}
 
 	if hostedZoneId != "" {
@@ -226,7 +226,7 @@ func validateDMARCRecord(t *testing.T, domain string) {
 
 func createAWSSession(t *testing.T) *session.Session {
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-1"), // SES is typically in us-east-1
+		Region: aws.String("ap-southeast-1"), 
 	})
 	require.NoError(t, err, "Failed to create AWS session")
 	return sess
