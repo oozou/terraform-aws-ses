@@ -48,7 +48,7 @@ func testSESEmailVerification(t *testing.T) {
 		},
 	})
 
-	//defer terraform.Destroy(t, terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
 
 	terraform.InitAndApply(t, terraformOptions)
 
@@ -78,7 +78,7 @@ func testSESDomainVerification(t *testing.T) {
 		},
 	})
 
-	//defer terraform.Destroy(t, terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
 	
 	terraform.InitAndApply(t, terraformOptions)
 
