@@ -147,21 +147,16 @@ jobs:
           go test -v -timeout 30m -report -report-file=test-report.json -html-file=test-report.html
           TEST_EXIT_CODE=$?
           
+          # Save test results for PR comment
           if [ -f test-results.json ]; then
-            {
-              echo 'test_results<<EOF'
-              cat test-results.json
-              echo 'EOF'
-            } >> "$GITHUB_OUTPUT"
+            test_results=$(< test-results.json)
+            printf "test_results<<EOF\n%s\nEOF\n" "$test_results" >> "$GITHUB_OUTPUT"
           fi
 
           # Save summary for PR comment
           if [ -f test-summary.md ]; then
-            {
-              echo 'test_summary<<EOF'
-              cat test-summary.md
-              echo 'EOF'
-            } >> "$GITHUB_OUTPUT"
+            test_summary=$(< test-summary.md)
+            printf "test_summary<<EOF\n%s\nEOF\n" "$test_summary" >> "$GITHUB_OUTPUT"
           fi
 
           exit $TEST_EXIT_CODE
