@@ -21,3 +21,14 @@ module "ses" {
 
   depends_on = [aws_route53_zone.main]
 }
+
+module "ses_email" {
+  source = "../.."
+
+  prefix      = var.prefix
+  environment = var.environment
+  tags        = var.tags
+
+  ses_mode  = "email"
+  ses_email = var.ses_email
+}

@@ -17,3 +17,17 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                    SES                                     */
+/* -------------------------------------------------------------------------- */
+
+variable "ses_email" {
+  description = "SES email configuration"
+  type = object({
+    email = string
+  })
+  default = {
+    email = "test@example.com"
+  }
+}

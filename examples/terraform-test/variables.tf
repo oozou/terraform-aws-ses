@@ -45,3 +45,13 @@ variable "route53_zone_name" {
   type        = string
   default     = "domain.com"
 }
+
+variable "ses_email" {
+  description = "SES email configuration"
+  type = object({
+    email = string
+  })
+  default = {
+    email = "test@example.com"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "test_suite": "Terraform AWS SES Tests",
+  "start_time": "2025-06-18T11:12:27.954547+07:00",
+  "end_time": "2025-06-18T11:16:44.707891+07:00",
+  "duration": "4m16.76665225s",
+  "total_tests": 6,
+  "passed_tests": 6,
+  "failed_tests": 0,
+  "skipped_tests": 0,
+  "results": [
+    {
+      "name": "TestSESDomainIdentityCreated",
+      "status": "PASS",
+      "duration": "2.786143916s"
+    },
+    {
+      "name": "TestSESEmailIdentityCreated",
+      "status": "PASS",
+      "duration": "2.733123958s"
+    },
+    {
+      "name": "TestSESDKIMTokensGenerated",
+      "status": "PASS",
+      "duration": "2.630720334s"
+    },
+    {
+      "name": "TestRoute53HostedZoneCreated",
+      "status": "PASS",
+      "duration": "6.701499666s"
+    },
+    {
+      "name": "TestSESConsumerPolicyCreated",
+      "status": "PASS",
+      "duration": "2.599165583s"
+    },
+    {
+      "name": "TestSESDomainVerificationToken",
+      "status": "PASS",
+      "duration": "2.621200458s"
+    }
+  ],
+  "summary": "✅ ALL TESTS PASSED! 6/6 tests successful"
+}
