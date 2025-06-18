@@ -1,224 +1,164 @@
 # Terraform AWS SES Module Tests
 
-This directory contains automated tests for the terraform-aws-ses module using Go and Terratest with comprehensive reporting capabilities.
+This directory contains comprehensive tests for the Terraform AWS SES module using the `terraform-test-util` framework.
 
-## Test Files
+## Overview
 
-- `terraform_aws_ses_test.go` - Consolidated integration tests with built-in reporting functionality
-- `go.mod` - Go module dependencies
+The tests validate the functionality of the AWS SES module by:
+- Creating SES domain and email identities
+- Verifying DKIM token generation
+- Testing Route53 hosted zone creation
+- Validating IAM consumer policy creation
+- Checking domain verification tokens
 
-## Test Structure
+## Test Framework
 
-The test suite has been consolidated into a single comprehensive test file that includes:
-- **Test execution logic** - Core test functions for email and domain verification
-- **Test reporting** - Built-in HTML, JSON, and Markdown report generation
-- **GitHub integration** - Automatic PR comment generation with test results
+The tests use the [terraform-test-util](https://github.com/oozou/terraform-test-util) framework which provides:
+- Comprehensive test reporting with JSON and HTML outputs
+- Beautiful console output with emojis and clear formatting
+- Pass rate calculation and test statistics
+- GitHub-friendly summary generation
+
+## Prerequisites
+
+- Go 1.21 or later
+- Terraform 1.6.0 or later
+- AWS credentials configured
+- Access to AWS SES, Route53, and IAM services
 
 ## Running Tests
 
-### Prerequisites
-
-1. Go 1.21+ installed
-2. Terraform installed
-3. AWS credentials configured
-
-### Basic Test Execution
-
-Run tests without reporting:
+### Using Make (Recommended)
 
 ```bash
-cd tests
-export AWS_REGION=ap-southeast-1
-go test -v -timeout 30m
+# Run all tests with report generation
+make test
+
+# Generate test reports (if tests were already run)
+make generate-report
+
+# Clean up test artifacts
+make clean
+
+# Run tests in verbose mode
+make test-verbose
+
+# Run a specific test
+make test-specific TEST=TestSESDomainIdentityCreated
 ```
 
-### Test Execution with Reporting
-
-Run tests with comprehensive reporting:
+### Using Go Test Directly
 
 ```bash
-cd tests
-export AWS_REGION=ap-southeast-1
-go test -v -timeout 30m -report -report-file=test-report.json -html-file=test-report.html
+# Run all tests
+go test -v -timeout 45m
+
+# Run tests with report generation
+go test -v -timeout 45m -args -report=true -report-file=test-report.json -html-file=test-report.html
+
+# Run a specific test
+go test -v -timeout 45m -run TestSESDomainIdentityCreated
 ```
 
-This will generate:
-- `test-report.json` - Detailed JSON test report
-- `test-report.html` - Interactive HTML test report
-- `test-summary.md` - GitHub-friendly markdown summary
-- `test-results.json` - Simplified results for CI/CD integration
+## Test Structure
 
-**Note:** Integration tests will create and destroy AWS resources, which may incur costs.
+The test suite includes the following test cases:
+
+1. **TestSESDomainIdentityCreated** - Verifies SES domain identity creation
+2. **TestSESEmailIdentityCreated** - Verifies SES email identity creation
+3. **TestSESDKIMTokensGenerated** - Validates DKIM token generation
+4. **TestRoute53HostedZoneCreated** - Tests Route53 hosted zone creation
+5. **TestSESConsumerPolicyCreated** - Verifies IAM consumer policy creation
+6. **TestSESDomainVerificationToken** - Checks domain verification token generation
 
 ## Test Configuration
 
-The tests use the examples with variable overrides:
+The tests use the `examples/terraform-test` configuration which includes:
+- Both domain and email SES configurations
+- Route53 hosted zone for domain verification
+- IAM consumer policy creation
+- Proper tagging and naming conventions
 
-- **Email Verification**: Tests pass `ses_email` variable with dynamic test email
-- **Domain Verification**: Tests pass `ses_domain` and `route53_zone_name` variables with dynamic test domains
-- **Route53 Integration**: Domain tests create actual hosted zones for verification
+## Test Reports
 
-## What the Tests Validate
+The framework generates multiple types of reports:
 
-### SES Email Identity Tests
-- ✅ Email identity resource creation
-- ✅ Email format validation
-- ✅ SES identity registration (integration test)
-- ✅ Verification attributes validation
+### JSON Report (`test-report.json`)
+Contains detailed test results in JSON format for programmatic processing.
 
-### SES Domain Identity Tests  
-- ✅ Domain identity resource creation
-- ✅ DKIM configuration and enablement
-- ✅ Domain verification setup (integration test)
-- ✅ DKIM attributes validation
-
-### DMARC Tests
-- ✅ DMARC Route53 record creation
-- ✅ TXT record type validation
-- ✅ DMARC policy format validation (v=DMARC1)
-- ✅ DNS record deployment (integration test)
-
-## Test Reporting Features
+### HTML Report (`test-report.html`)
+A beautiful, interactive HTML report with:
+- Test statistics and pass rates
+- Detailed test results with status indicators
+- Error details for failed tests
+- Progress bars and visual indicators
 
 ### Console Output
-- Real-time test progress with emojis and formatting
-- Detailed statistics (pass rate, duration, etc.)
-- Error details for failed tests
-- Summary with actionable insights
-
-### HTML Report
-- Interactive web-based test report
-- Visual progress bars and statistics
-- Color-coded test results
-- Responsive design for mobile viewing
-
-### JSON Report
-- Machine-readable test results
-- Detailed test metadata and timing
-- Error information and stack traces
-- Suitable for CI/CD integration
-
-### GitHub Integration
-- Automatic PR comments with test results
-- Markdown-formatted summaries
-- Status badges (pass/fail)
-- Failed test details with error messages
+Formatted console output with:
+- Test execution progress
+- Detailed statistics
+- Pass/fail indicators with emojis
+- Summary and recommendations
 
 ## CI/CD Integration
 
-Tests are automatically run on pull requests via GitHub Actions workflow with the following features:
+The tests are integrated with GitHub Actions workflow that:
+- Runs tests automatically on pull requests
+- Generates and uploads test reports
+- Posts test results as PR comments
+- Includes "@claude fix build error:" prefix for failed tests
+- Provides direct links to workflow runs and detailed logs
 
-### Automated Failure Handling
-- **Validation failures**: Terraform format/validation issues trigger "@claude fix build error:" comments
-- **Lint failures**: Go linting issues trigger "@claude fix build error:" comments  
-- **Test failures**: Failed integration tests trigger "@claude fix build error:" comments
-- **Build links**: All failure comments include direct links to the GitHub Actions build logs
+## Environment Variables
 
-### Test Result Comments
-- Successful tests post detailed results to PR comments
-- Failed tests post error details with "@claude fix build error:" prefix
-- Comments are updated (not duplicated) on subsequent runs
-- Rich formatting with tables, badges, and error details
+The following environment variables can be used to configure the tests:
 
-### Artifacts
-- Test reports are uploaded as GitHub Actions artifacts
-- HTML and JSON reports available for download
-- Test summaries integrated with GitHub's step summary feature
-
-## Example Test Output
-
-### Console Output
-```
-🧪 TERRAFORM AWS SES TEST REPORT
-================================================================================
-📅 Test Suite: Terraform AWS SES Tests
-⏰ Start Time: 2024-01-15 10:30:00 UTC
-⏰ End Time:   2024-01-15 10:35:30 UTC
-⏱️  Duration:   5m30s
-
-📊 TEST STATISTICS
-================================================================================
-📈 Total Tests:   2
-✅ Passed Tests:  2
-❌ Failed Tests:  0
-⏭️  Skipped Tests: 0
-📊 Pass Rate:     100.0%
-
-📋 DETAILED TEST RESULTS
-================================================================================
-1. TestSESEmailVerification - ✅ PASS (2m15s)
-2. TestSESDomainVerification - ✅ PASS (3m15s)
-
-📝 SUMMARY
-================================================================================
-✅ ALL TESTS PASSED! 2/2 tests successful
-
-🎉 Congratulations! All tests passed successfully!
-```
-
-### GitHub PR Comment (Success)
-```markdown
-## 🧪 Terraform AWS SES Test Results
-
-![Tests Passed](https://img.shields.io/badge/tests-passed-success)
-
-### 📊 Summary
-
-| Metric | Value |
-|--------|-------|
-| Total Tests | 2 |
-| ✅ Passed | 2 |
-| ❌ Failed | 0 |
-| ⏭️ Skipped | 0 |
-| 📊 Pass Rate | 100.0% |
-| ⏱️ Duration | 5m30s |
-
-### 📋 Test Details
-
-| Test Name | Status | Duration |
-|-----------|--------|----------|
-| TestSESEmailVerification | ✅ Pass | 2m15s |
-| TestSESDomainVerification | ✅ Pass | 3m15s |
-
-### 📝 Summary
-
-✅ ALL TESTS PASSED! 2/2 tests successful
-```
-
-### GitHub PR Comment (Failure)
-```markdown
-@claude fix build error:
-
-**Build Link:** https://github.com/owner/repo/actions/runs/123456789
-
-## 🧪 Terraform AWS SES Test Results
-
-![Tests Failed](https://img.shields.io/badge/tests-failed-critical)
-
-### ❌ Failed Tests
-
-**TestSESEmailVerification**
-```
-failed to list SES identities: AccessDenied: User is not authorized to perform: ses:ListIdentities
-```
-
-### 📝 Summary
-
-❌ 1/2 tests failed, 1 passed
-```
+- `AWS_DEFAULT_REGION` - AWS region for testing (default: ap-southeast-1)
+- `AWS_ACCESS_KEY_ID` - AWS access key
+- `AWS_SECRET_ACCESS_KEY` - AWS secret key
+- `AWS_SESSION_TOKEN` - AWS session token (if using temporary credentials)
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **AWS Credentials**: Ensure AWS credentials are properly configured
-2. **Permissions**: Tests require SES, Route53, and IAM permissions
-3. **Region**: Make sure AWS_REGION is set to ap-southeast-1 or your preferred region
-4. **Timeouts**: Large tests may need increased timeout values
+1. **AWS Permissions**: Ensure your AWS credentials have permissions for SES, Route53, and IAM
+2. **Domain Conflicts**: Tests use unique domain names to avoid conflicts
+3. **Timeout Issues**: Tests have a 45-minute timeout; adjust if needed
+4. **Resource Cleanup**: The `terraform destroy` is called automatically in defer blocks
 
 ### Debug Mode
 
-For verbose debugging, run tests with additional flags:
+For debugging failed tests:
 
 ```bash
-go test -v -timeout 30m -report -args -test.v
+# Run with verbose output
+go test -v -timeout 45m -run TestSpecificTest
+
+# Check terraform logs
+export TF_LOG=DEBUG
+go test -v -timeout 45m
+```
+
+## Contributing
+
+When adding new tests:
+
+1. Follow the existing test structure and naming conventions
+2. Add proper error handling and cleanup
+3. Include meaningful assertions and error messages
+4. Update this README with new test descriptions
+5. Ensure tests are idempotent and don't interfere with each other
+
+## Dependencies
+
+The tests depend on:
+
+- `github.com/gruntwork-io/terratest` - Terraform testing framework
+- `github.com/stretchr/testify` - Test assertions and utilities
+- `github.com/aws/aws-sdk-go` - AWS SDK for Go
+- `github.com/oozou/terraform-test-util` - Test reporting utilities
+
+## License
+
+This test suite is part of the terraform-aws-ses module and follows the same license terms.
